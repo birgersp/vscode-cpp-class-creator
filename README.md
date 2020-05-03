@@ -1,6 +1,6 @@
-# cpp-class-creator README
+#[C++ class creator](https://github.com/birgersp/vscode-cpp-class-creator.git).
 
-Simple C++ classes (source and header file) creation.
+VSCode extension for simple C++ classes (source and header file) creation.
 
 ## Features
 
