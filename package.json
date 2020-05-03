@@ -1,8 +1,12 @@
 {
 	"name": "cpp-class-creator",
-	"displayName": "cpp-class-creator",
+	"publisher": "birgersp",
+	"repository": {
+		"directory": "https://github.com/birgersp/vscode-cpp-class-creator.git"
+	},
+	"displayName": "C++ class creator",
 	"description": "",
-	"version": "0.0.1",
+	"version": "1.0.1",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
