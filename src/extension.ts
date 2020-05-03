@@ -1,5 +1,12 @@
 import * as vscode from 'vscode'
 import * as fs from 'fs'
+import * as path from 'path'
+
+function openTextDocument(filename: string) {
+	vscode.workspace.openTextDocument(filename).then(doc => {
+		vscode.window.showTextDocument(doc)
+	})
+}
 
 function createInput(): Thenable<string | undefined> {
 
@@ -55,8 +62,17 @@ function createSource(dir: string, name: string) {
 
 export function activate(context: vscode.ExtensionContext) {
 
-	let disposable = vscode.commands.registerCommand('cpp-class-creator.createClass', () => {
+	let disposable = vscode.commands.registerCommand('cpp-class-creator.createClass', (context) => {
+
+		let srcDir: string
+		if (context != undefined) {
+			if (context.fsPath != null) {
+				srcDir = context.fsPath
+			}
+		}
+
 		createInput().then((className: string | undefined) => {
+
 			if (className == undefined) {
 				return
 			}
@@ -67,9 +83,17 @@ export function activate(context: vscode.ExtensionContext) {
 				return
 			}
 
-			let srcDir = `${projectDir}/src`
-			if (!fs.existsSync(srcDir)) {
-				showErrorMsg("Cannot create class: Can't find \"src\" folder")
+			if (srcDir == null) {
+
+				let currentFile = vscode.window.activeTextEditor?.document.fileName
+				if (currentFile != undefined) {
+					srcDir = path.dirname(currentFile)
+				} else {
+					srcDir = `${projectDir}/src`
+					if (!fs.existsSync(srcDir)) {
+						fs.mkdirSync(srcDir)
+					}
+				}
 			}
 
 			if (className == "") {
@@ -82,6 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			createHeader(srcDir, className)
 			createSource(srcDir, className)
+			openTextDocument(`${srcDir}/${className}.h`)
 		})
 	})
 	context.subscriptions.push(disposable)
