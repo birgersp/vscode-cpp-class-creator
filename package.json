@@ -2,11 +2,11 @@
 	"name": "cpp-class-creator",
 	"publisher": "birgersp",
 	"repository": {
-		"directory": "https://github.com/birgersp/vscode-cpp-class-creator.git"
+		"url": "https://github.com/birgersp/vscode-cpp-class-creator.git"
 	},
 	"displayName": "C++ Class Creator",
 	"description": "Quick C++ class creation from context menu or hotkey",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"engines": {
 		"vscode": "^1.44.0"
 	},

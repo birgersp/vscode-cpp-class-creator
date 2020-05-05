@@ -10,5 +10,6 @@ PRs and issues are welcome!
 
 ## Source
 
-[github](https://github.com/birgersp/vscode-cpp-class-creator.git)
+[GitHub](https://github.com/birgersp/vscode-cpp-class-creator.git)
+
 [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=birgersp.cpp-class-creator)
