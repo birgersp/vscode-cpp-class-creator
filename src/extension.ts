@@ -26,9 +26,16 @@ function showErrorMsg(msg: string) {
 	vscode.window.showErrorMessage(msg)
 }
 
+function writeFileInDir(dir: string, name: string, data: string) {
+	let fullDir = vscode.workspace.rootPath + path.sep + dir
+	if (!fs.existsSync(fullDir))
+		fs.mkdirSync(fullDir)
+	let fullFilePath = fullDir + path.sep + dir
+	fs.writeFileSync(fullFilePath, data)
+}
+
 function createHeader(dir: string, name: string) {
 
-	let headerGuardMacro = `${name.toUpperCase()}_H`
 	let headerFileData =
 		`#pragma once` +
 		`\n` +
@@ -44,7 +51,7 @@ function createHeader(dir: string, name: string) {
 		`\n` +
 		`};\n` +
 		``
-	fs.writeFileSync(`${dir}/${name}.h`, headerFileData)
+	writeFileInDir(dir, `${name}.h`, headerFileData)
 }
 
 function createSource(dir: string, name: string) {
@@ -54,17 +61,60 @@ function createSource(dir: string, name: string) {
 		`\n` +
 		`\n` +
 		``
-	fs.writeFileSync(`${dir}/${name}.cpp`, sourceData)
+	writeFileInDir(dir, `${name}.cpp`, sourceData)
+}
+
+/**
+ * Returns the path of a sub-directory, after "src" or "include".
+ * Example: "src/some/sub/dir" returns "some/sub/dir"
+ * @param dir A directory path relative to project root
+ * @returns A directory path
+ */
+function inferSubdir(dir: string): string {
+
+	let dirSplit = dir.split(path.sep)
+	if (["src", "include"].includes(dirSplit[0]) && (dirSplit.length > 1)) {
+		return dirSplit.splice(0, 1).join(path.sep)
+	}
+	return ""
+}
+
+function createClass(targetDir: string, name: string) {
+
+	let projectDir = vscode.workspace.rootPath
+	if (projectDir == undefined) {
+		showErrorMsg("Cannot create class: No folder open")
+		return
+	}
+
+	let headerDir: string
+	let cppDir: string
+
+	let relativeDir = targetDir.replace(projectDir, "")
+	let subdir = inferSubdir(relativeDir)
+	if (subdir != "") {
+		headerDir = "include" + subdir
+		cppDir = "src" + subdir
+	} else {
+		headerDir = "include"
+		cppDir = "src"
+	}
+
+	createHeader(headerDir, name)
+	createSource(cppDir, name)
+	openTextDocument(`${vscode.workspace.rootPath}${path.sep}${headerDir}${path.sep}${name}.h`)
 }
 
 export function activate(context: vscode.ExtensionContext) {
 
 	let disposable = vscode.commands.registerCommand('cpp-class-creator.createClass', (context) => {
 
-		let srcDir: string
+		let targetDir = ""
 		if (context != undefined) {
-			if (context.fsPath != null) {
-				srcDir = context.fsPath
+			targetDir = context.fsPath
+		} else {
+			if (vscode.window.activeTextEditor != undefined) {
+				targetDir = vscode.window.activeTextEditor.document.uri.path
 			}
 		}
 
@@ -74,36 +124,16 @@ export function activate(context: vscode.ExtensionContext) {
 				return
 			}
 
-			let projectDir = vscode.workspace.rootPath
-			if (projectDir == undefined) {
-				showErrorMsg("Cannot create class: No folder open")
+			if (className.indexOf(" ") != -1) {
+				showErrorMsg("Cannot create class: Spaces not allowed")
 				return
-			}
-
-			if (srcDir == null) {
-
-				let currentFile = vscode.window.activeTextEditor?.document.fileName
-				if (currentFile != undefined) {
-					srcDir = path.dirname(currentFile)
-				} else {
-					srcDir = `${projectDir}/src`
-					if (!fs.existsSync(srcDir)) {
-						fs.mkdirSync(srcDir)
-					}
-				}
 			}
 
 			if (className == "") {
 				className = "MyClass"
 			}
 
-			if (className.indexOf(" ") != -1) {
-				showErrorMsg("Cannot create class: Spaces not allowed")
-			}
-
-			createHeader(srcDir, className)
-			createSource(srcDir, className)
-			openTextDocument(`${srcDir}/${className}.h`)
+			createClass(targetDir, className)
 		})
 	})
 	context.subscriptions.push(disposable)
