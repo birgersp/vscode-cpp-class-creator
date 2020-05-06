@@ -30,8 +30,7 @@ function createHeader(dir: string, name: string) {
 
 	let headerGuardMacro = `${name.toUpperCase()}_H`
 	let headerFileData =
-		`#ifndef ${headerGuardMacro}\n` +
-		`#define ${headerGuardMacro}\n` +
+		`#pragma once` +
 		`\n` +
 		`class ${name}\n` +
 		`{\n` +
@@ -44,8 +43,6 @@ function createHeader(dir: string, name: string) {
 		`\n` +
 		`\n` +
 		`};\n` +
-		`\n` +
-		`#endif\n` +
 		``
 	fs.writeFileSync(`${dir}/${name}.h`, headerFileData)
 }
