@@ -30,14 +30,14 @@ function writeFileInDir(dir: string, name: string, data: string) {
 	let fullDir = vscode.workspace.rootPath + path.sep + dir
 	if (!fs.existsSync(fullDir))
 		fs.mkdirSync(fullDir)
-	let fullFilePath = fullDir + path.sep + dir
+	let fullFilePath = fullDir + path.sep + name
 	fs.writeFileSync(fullFilePath, data)
 }
 
 function createHeader(dir: string, name: string) {
 
 	let headerFileData =
-		`#pragma once` +
+		`#pragma once\n` +
 		`\n` +
 		`class ${name}\n` +
 		`{\n` +
@@ -74,7 +74,8 @@ function inferSubdir(dir: string): string {
 
 	let dirSplit = dir.split(path.sep)
 	if (["src", "include"].includes(dirSplit[0]) && (dirSplit.length > 1)) {
-		return dirSplit.splice(0, 1).join(path.sep)
+		dirSplit.splice(0, 1)
+		return dirSplit.join(path.sep)
 	}
 	return ""
 }
@@ -90,11 +91,17 @@ function createClass(targetDir: string, name: string) {
 	let headerDir: string
 	let cppDir: string
 
-	let relativeDir = targetDir.replace(projectDir, "")
+	let relativeDir: string
+	if (projectDir == targetDir) {
+		relativeDir = ""
+	} else {
+		relativeDir = targetDir.replace(projectDir + path.sep, "")
+	}
+
 	let subdir = inferSubdir(relativeDir)
 	if (subdir != "") {
-		headerDir = "include" + subdir
-		cppDir = "src" + subdir
+		headerDir = "include" + path.sep + subdir
+		cppDir = "src" + path.sep + subdir
 	} else {
 		headerDir = "include"
 		cppDir = "src"

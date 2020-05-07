@@ -32,11 +32,13 @@
 			}
 		],
 		"menus": {
-			"explorer/context": [{
-				"command": "cpp-class-creator.createClass",
-				"group": "cpp@1",
-				"when": "explorerResourceIsFolder"
-			}]
+			"explorer/context": [
+				{
+					"command": "cpp-class-creator.createClass",
+					"group": "cpp@1",
+					"when": "explorerResourceIsFolder"
+				}
+			]
 		}
 	},
 	"scripts": {
