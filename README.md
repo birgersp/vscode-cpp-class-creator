@@ -4,7 +4,7 @@ VSCode extension for simple C++ class creation.
 
 Right click a folder on your workspace and select "Create C++ class" (or hit Alt+x), give your class a name and you're good to go.
 
-![gif](https://i.imgur.com/VA1vl5i.gif)
+![gif](https://i.imgur.com/of1LRjx.gif)
 
 PRs and issues are welcome!
 
